@@ -58,25 +58,6 @@ export async function updateMarketRates(rates) {
   return { success: true };
 }
 
-// Catalysers Helper for Image Upload
-async function uploadToSupabase(file) {
-  const ext = file.name.split('.').pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
-  const filePath = `uploads/${fileName}`;
-
-  const { data, error } = await supabase.storage
-    .from('catalyser-images')
-    .upload(filePath, file);
-
-  if (error) throw error;
-
-  const { data: { publicUrl } } = supabase.storage
-    .from('catalyser-images')
-    .getPublicUrl(filePath);
-
-  return publicUrl;
-}
-
 // Catalysers
 export async function getCatalysers() {
   const { data, error } = await supabase
@@ -99,37 +80,20 @@ export async function getCatalysers() {
   }));
 }
 
-export async function addCatalyser(formData) {
+export async function addCatalyser(data) {
   await checkAdmin();
   
-  const images = [];
-  const imageFiles = formData.getAll('images');
-  
-  for (const file of imageFiles) {
-    if (file && file.size > 0) {
-      try {
-        const url = await uploadToSupabase(file);
-        images.push(url);
-      } catch (err) {
-        console.error('Upload failed:', err);
-      }
-    }
-  }
-
-  const weightKg = parseFloat(formData.get('weightKg'));
-  const moisturePercent = parseFloat(formData.get('moisturePercent'));
-
   const { error } = await supabase.from('catalysers').insert({
     id: Date.now().toString(),
-    model_number: formData.get('modelNumber'),
-    brand_name: formData.get('brandName'),
-    description: formData.get('description') || '',
-    images: images,
-    weight_gram: weightKg * 1000,
-    moisture: moisturePercent / 100,
-    pt_ppm: parseFloat(formData.get('ptPpm')),
-    pd_ppm: parseFloat(formData.get('pdPpm')),
-    rh_ppm: parseFloat(formData.get('rhPpm')),
+    model_number: data.modelNumber,
+    brand_name: data.brandName,
+    description: data.description || '',
+    images: data.images || [],
+    weight_gram: parseFloat(data.weightKg) * 1000,
+    moisture: parseFloat(data.moisturePercent) / 100,
+    pt_ppm: parseFloat(data.ptPpm),
+    pd_ppm: parseFloat(data.pdPpm),
+    rh_ppm: parseFloat(data.rhPpm),
   });
 
   if (error) return { error: error.message };
@@ -139,41 +103,22 @@ export async function addCatalyser(formData) {
   return { success: true };
 }
 
-export async function updateCatalyser(id, formData) {
+export async function updateCatalyser(id, data) {
   await checkAdmin();
   
   const { data: existing } = await supabase.from('catalysers').select('images').eq('id', id).single();
   if (!existing) return { error: 'Not found' };
 
-  const newImages = [];
-  const imageFiles = formData.getAll('images');
-  
-  if (imageFiles && imageFiles.length > 0 && imageFiles[0].size > 0) {
-    for (const file of imageFiles) {
-      if (file.size > 0) {
-        try {
-          const url = await uploadToSupabase(file);
-          newImages.push(url);
-        } catch (err) {
-          console.error('Upload failed:', err);
-        }
-      }
-    }
-  }
-
-  const weightKg = parseFloat(formData.get('weightKg'));
-  const moisturePercent = parseFloat(formData.get('moisturePercent'));
-
   const { error } = await supabase.from('catalysers').update({
-    model_number: formData.get('modelNumber'),
-    brand_name: formData.get('brandName'),
-    description: formData.get('description') || '',
-    images: newImages.length > 0 ? newImages : existing.images,
-    weight_gram: weightKg * 1000,
-    moisture: moisturePercent / 100,
-    pt_ppm: parseFloat(formData.get('ptPpm')),
-    pd_ppm: parseFloat(formData.get('pdPpm')),
-    rh_ppm: parseFloat(formData.get('rhPpm')),
+    model_number: data.modelNumber,
+    brand_name: data.brandName,
+    description: data.description || '',
+    images: data.images && data.images.length > 0 ? data.images : existing.images,
+    weight_gram: parseFloat(data.weightKg) * 1000,
+    moisture: parseFloat(data.moisturePercent) / 100,
+    pt_ppm: parseFloat(data.ptPpm),
+    pd_ppm: parseFloat(data.pdPpm),
+    rh_ppm: parseFloat(data.rhPpm),
   }).eq('id', id);
 
   if (error) return { error: error.message };
