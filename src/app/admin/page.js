@@ -33,15 +33,8 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div>
         <QuickMarketRateForm initialRates={initialRates} />
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Search className="w-5 h-5 text-blue-400" />
-            Quick Search
-          </h3>
-          <AdminDashboardSearch data={calcs} />
-        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -55,6 +48,13 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <Search className="w-5 h-5 text-blue-400" />
+          Quick Search
+        </h3>
+        <AdminDashboardSearch data={calcs} />
+      </div>
     </div>
   );
 }
