@@ -80,6 +80,29 @@ export async function getCatalysers() {
   }));
 }
 
+export async function getCatalyserById(id) {
+  const { data, error } = await supabase
+    .from('catalysers')
+    .select('*')
+    .eq('id', id)
+    .single();
+  
+  if (error || !data) return null;
+  
+  return {
+    id: data.id,
+    modelNumber: data.model_number,
+    brandName: data.brand_name,
+    description: data.description,
+    images: data.images,
+    weightGram: data.weight_gram,
+    moisture: data.moisture,
+    ptPpm: data.pt_ppm,
+    pdPpm: data.pd_ppm,
+    rhPpm: data.rh_ppm
+  };
+}
+
 export async function addCatalyser(data) {
   await checkAdmin();
   

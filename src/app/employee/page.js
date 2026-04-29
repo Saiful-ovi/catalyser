@@ -3,8 +3,10 @@ import { calculatePrice } from '@/lib/calculator';
 import EmployeeSearch from '@/components/EmployeeSearch';
 
 export default async function EmployeePage() {
-  const catalysers = await getCatalysers();
-  const settings = await getSettings();
+  const [catalysers, settings] = await Promise.all([
+    getCatalysers(),
+    getSettings()
+  ]);
 
   // ONLY extract non-sensitive data and final price
   const safeCatalysers = catalysers.map(cat => {

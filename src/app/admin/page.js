@@ -2,11 +2,14 @@ import { getCatalysers, getSettings } from '@/actions/data';
 import { calculatePrice } from '@/lib/calculator';
 import QuickMarketRateForm from '@/components/QuickMarketRateForm';
 import AdminDashboardSearch from '@/components/AdminDashboardSearch';
-import { Search } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function AdminDashboard() {
-  const catalysers = await getCatalysers();
-  const settings = await getSettings();
+  const [catalysers, settings] = await Promise.all([
+    getCatalysers(),
+    getSettings()
+  ]);
 
   const calcs = catalysers.map(cat => ({
     ...cat,
@@ -88,6 +91,15 @@ export default async function AdminDashboard() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="mt-8 pt-6 border-t border-slate-700/50 flex justify-center">
+          <Link 
+            href="/admin/catalysers"
+            className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/25 active:scale-95 group"
+          >
+            View More
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
     </div>

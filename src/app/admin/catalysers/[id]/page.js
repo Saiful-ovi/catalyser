@@ -1,11 +1,10 @@
-import { getCatalysers } from '@/actions/data';
+import { getCatalyserById } from '@/actions/data';
 import EditCatalyserForm from '@/components/EditCatalyserForm';
 import { notFound } from 'next/navigation';
 
 export default async function EditCatalyserPage({ params }) {
   const { id } = await params;
-  const catalysers = await getCatalysers();
-  const catalyser = catalysers.find(c => c.id === id);
+  const catalyser = await getCatalyserById(id);
 
   if (!catalyser) {
     notFound();

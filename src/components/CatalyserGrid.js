@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Pencil, Database, Scale, Droplets, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
+import { Search, Pencil, Database, Scale, Droplets, X, ChevronLeft, ChevronRight, Maximize2, Tag } from 'lucide-react';
 import Link from 'next/link';
 import DeleteAction from './DeleteAction';
+import { calculatePrice } from '@/lib/calculator';
 
-export default function CatalyserGrid({ initialData }) {
+export default function CatalyserGrid({ initialData, settings }) {
   const [query, setQuery] = useState('');
   const [selectedCat, setSelectedCat] = useState(null);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
@@ -44,90 +45,102 @@ export default function CatalyserGrid({ initialData }) {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(cat => (
-          <div key={cat.id} className="glass-panel group overflow-hidden flex flex-col border-slate-800 hover:border-blue-500/30 transition-all duration-300">
-            {/* Image Section */}
-            <div 
-              className="h-40 w-full bg-slate-800/50 relative overflow-hidden border-b border-slate-800 cursor-pointer"
-              onClick={() => openModal(cat)}
-            >
-              {cat.images && cat.images.length > 0 ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img 
-                  src={cat.images[0]} 
-                  alt={cat.modelNumber} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-600">
-                  <Database className="w-8 h-8 opacity-20" />
+        {filtered.map(cat => {
+          const pricing = settings ? calculatePrice(cat, settings) : null;
+          return (
+            <div key={cat.id} className="glass-panel group overflow-hidden flex flex-col border-slate-800 hover:border-blue-500/30 transition-all duration-300">
+              {/* Image Section */}
+              <div 
+                className="h-40 w-full bg-slate-800/50 relative overflow-hidden border-b border-slate-800 cursor-pointer"
+                onClick={() => openModal(cat)}
+              >
+                {cat.images && cat.images.length > 0 ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src={cat.images[0]} 
+                    alt={cat.modelNumber} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-600">
+                    <Database className="w-8 h-8 opacity-20" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="bg-white/10 backdrop-blur-md p-2.5 rounded-full">
+                    <Maximize2 className="w-5 h-5 text-white" />
+                  </div>
                 </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div className="bg-white/10 backdrop-blur-md p-2.5 rounded-full">
-                  <Maximize2 className="w-5 h-5 text-white" />
+                <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <Link 
+                    href={`/admin/catalysers/${cat.id}`}
+                    className="p-2 bg-slate-900/80 hover:bg-blue-600 text-white rounded-lg backdrop-blur-sm transition-all"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Link>
+                  <div className="p-2 bg-slate-900/80 hover:bg-red-600 text-white rounded-lg backdrop-blur-sm transition-all cursor-pointer" onClick={e => e.stopPropagation()}>
+                    <DeleteAction id={cat.id} isIconButton />
+                  </div>
                 </div>
               </div>
-              <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                <Link 
-                  href={`/admin/catalysers/${cat.id}`}
-                  className="p-2 bg-slate-900/80 hover:bg-blue-600 text-white rounded-lg backdrop-blur-sm transition-all"
-                  onClick={e => e.stopPropagation()}
-                >
-                  <Pencil className="w-4 h-4" />
-                </Link>
-                <div className="p-2 bg-slate-900/80 hover:bg-red-600 text-white rounded-lg backdrop-blur-sm transition-all cursor-pointer" onClick={e => e.stopPropagation()}>
-                  <DeleteAction id={cat.id} isIconButton />
+
+              {/* Info Section */}
+              <div className="p-5 flex-1 flex flex-col cursor-pointer" onClick={() => openModal(cat)}>
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-white leading-tight">{cat.modelNumber}</h3>
+                    <p className="text-sm text-blue-400 font-medium">{cat.brandName}</p>
+                  </div>
+                  {pricing && (
+                    <div className="text-right">
+                      <p className="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Price (AED)</p>
+                      <p className="text-lg font-black text-indigo-400">
+                        {pricing.final_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {cat.description && (
+                  <p className="text-xs text-slate-400 mb-4 line-clamp-2">{cat.description}</p>
+                )}
+
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-slate-900/50 p-2 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center gap-1.5 text-slate-500 text-[10px] uppercase font-bold mb-1">
+                      <Scale className="w-3 h-3" />
+                      Weight
+                    </div>
+                    <div className="text-white text-sm font-mono">{(cat.weightGram / 1000).toFixed(3)} kg</div>
+                  </div>
+                  <div className="bg-slate-900/50 p-2 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center gap-1.5 text-slate-500 text-[10px] uppercase font-bold mb-1">
+                      <Droplets className="w-3 h-3" />
+                      Moisture
+                    </div>
+                    <div className="text-white text-sm font-mono">{(cat.moisture * 100).toFixed(1)}%</div>
+                  </div>
+                </div>
+
+                <div className="mt-auto border-t border-slate-800 pt-4 flex justify-between text-center">
+                  <div className="flex-1 border-r border-slate-800 last:border-0 px-2">
+                    <p className="text-[9px] uppercase font-bold text-slate-500 mb-0.5">Pt</p>
+                    <p className="text-xs font-mono text-slate-300">{cat.ptPpm}</p>
+                  </div>
+                  <div className="flex-1 border-r border-slate-800 last:border-0 px-2">
+                    <p className="text-[9px] uppercase font-bold text-slate-500 mb-0.5">Pd</p>
+                    <p className="text-xs font-mono text-slate-300">{cat.pdPpm}</p>
+                  </div>
+                  <div className="flex-1 border-r border-slate-800 last:border-0 px-2">
+                    <p className="text-[9px] uppercase font-bold text-slate-500 mb-0.5">Rh</p>
+                    <p className="text-xs font-mono text-slate-300">{cat.rhPpm}</p>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Info Section */}
-            <div className="p-5 flex-1 flex flex-col cursor-pointer" onClick={() => openModal(cat)}>
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-lg font-bold text-white leading-tight">{cat.modelNumber}</h3>
-                  <p className="text-sm text-blue-400 font-medium">{cat.brandName}</p>
-                </div>
-              </div>
-              {cat.description && (
-                <p className="text-xs text-slate-400 mb-4 line-clamp-2">{cat.description}</p>
-              )}
-
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="bg-slate-900/50 p-2 rounded-lg border border-slate-700/30">
-                  <div className="flex items-center gap-1.5 text-slate-500 text-[10px] uppercase font-bold mb-1">
-                    <Scale className="w-3 h-3" />
-                    Weight
-                  </div>
-                  <div className="text-white text-sm font-mono">{(cat.weightGram / 1000).toFixed(3)} kg</div>
-                </div>
-                <div className="bg-slate-900/50 p-2 rounded-lg border border-slate-700/30">
-                  <div className="flex items-center gap-1.5 text-slate-500 text-[10px] uppercase font-bold mb-1">
-                    <Droplets className="w-3 h-3" />
-                    Moisture
-                  </div>
-                  <div className="text-white text-sm font-mono">{(cat.moisture * 100).toFixed(1)}%</div>
-                </div>
-              </div>
-
-              <div className="mt-auto border-t border-slate-800 pt-4 flex justify-between text-center">
-                <div className="flex-1 border-r border-slate-800 last:border-0 px-2">
-                  <p className="text-[9px] uppercase font-bold text-slate-500 mb-0.5">Pt</p>
-                  <p className="text-xs font-mono text-slate-300">{cat.ptPpm}</p>
-                </div>
-                <div className="flex-1 border-r border-slate-800 last:border-0 px-2">
-                  <p className="text-[9px] uppercase font-bold text-slate-500 mb-0.5">Pd</p>
-                  <p className="text-xs font-mono text-slate-300">{cat.pdPpm}</p>
-                </div>
-                <div className="flex-1 border-r border-slate-800 last:border-0 px-2">
-                  <p className="text-[9px] uppercase font-bold text-slate-500 mb-0.5">Rh</p>
-                  <p className="text-xs font-mono text-slate-300">{cat.rhPpm}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
@@ -231,6 +244,27 @@ export default function CatalyserGrid({ initialData }) {
                   <div className="p-4 bg-slate-900/50 rounded-xl border border-white/5">
                     <span className="text-slate-400 text-xs uppercase font-bold block mb-2">Description</span>
                     <p className="text-white text-sm">{selectedCat.description}</p>
+                  </div>
+                )}
+
+                {/* Price Display in Modal */}
+                {settings && (
+                  <div className="p-5 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-2xl border border-blue-500/30 flex items-center justify-between shadow-xl">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-600 p-2 rounded-xl">
+                        <Tag className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-blue-300 text-[10px] uppercase font-bold">Current Value</p>
+                        <p className="text-white text-xs opacity-70">Based on live market rates</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-black text-white">
+                        {calculatePrice(selectedCat, settings).final_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        <span className="ml-2 text-sm font-bold text-blue-400">AED</span>
+                      </p>
+                    </div>
                   </div>
                 )}
 

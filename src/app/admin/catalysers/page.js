@@ -1,9 +1,12 @@
-import { getCatalysers } from '@/actions/data';
+import { getCatalysers, getSettings } from '@/actions/data';
 import CatalyserForm from '@/components/CatalyserForm';
 import CatalyserGrid from '@/components/CatalyserGrid';
 
 export default async function CatalysersPage() {
-  const catalysers = await getCatalysers();
+  const [catalysers, settings] = await Promise.all([
+    getCatalysers(),
+    getSettings()
+  ]);
 
   return (
     <div className="space-y-8 max-w-6xl">
@@ -17,7 +20,7 @@ export default async function CatalysersPage() {
         <CatalyserForm />
       </div>
 
-      <CatalyserGrid initialData={catalysers} />
+      <CatalyserGrid initialData={catalysers} settings={settings} />
     </div>
   );
 }
