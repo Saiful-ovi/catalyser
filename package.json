@@ -1,0 +1,8 @@
+{
+  "name": "catalytic-pricing",
+  "scripts": {
+    "dev": "cd catalytic-pricing && npm run dev",
+    "build": "cd catalytic-pricing && npm run build",
+    "start": "cd catalytic-pricing && npm run start"
+  }
+}

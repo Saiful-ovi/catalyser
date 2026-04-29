@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-surface: rgba(30, 41, 59, 0.7);
+  --color-surface-hover: rgba(30, 41, 59, 0.9);
+}
+
+@layer base {
+  :root {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+  }
+  
+  body {
+    @apply bg-slate-900 text-slate-50 antialiased min-h-screen selection:bg-blue-500/30;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 shadow-xl rounded-2xl;
+  }
+
+  /* Use longhand padding so Tailwind utilities (pl-10, pl-12, pr-10) can override individual sides */
+  .glass-input {
+    width: 100%;
+    background-color: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(51, 65, 85, 1);
+    border-radius: 0.75rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    color: rgba(241, 245, 249, 1);
+    transition: all 0.15s ease;
+  }
+  .glass-input::placeholder {
+    color: rgba(100, 116, 139, 1);
+  }
+  .glass-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+
+  .glass-input-icon {
+    width: 100%;
+    background-color: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(51, 65, 85, 1);
+    border-radius: 0.75rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 2.75rem;
+    padding-right: 1rem;
+    color: rgba(241, 245, 249, 1);
+    transition: all 0.15s ease;
+  }
+  .glass-input-icon::placeholder {
+    color: rgba(100, 116, 139, 1);
+  }
+  .glass-input-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3 px-6 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98];
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}

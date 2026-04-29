@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1777366091655",
+    "modelNumber": "4680",
+    "brandName": "mazda",
+    "description": "star jali\r\n",
+    "images": [
+      "/uploads/1777366091651-nkuns.jpeg",
+      "/uploads/1777366091653-mbr65.jpeg"
+    ],
+    "weightGram": 1730,
+    "moisture": 0.035,
+    "ptPpm": 1950,
+    "pdPpm": 776,
+    "rhPpm": 476
+  },
+  {
+    "id": "1777366163687",
+    "modelNumber": "0123oh ev",
+    "brandName": "toyota",
+    "description": "soil no number",
+    "images": [
+      "/uploads/1777366163685-bbeasf.png"
+    ],
+    "weightGram": 1000,
+    "moisture": 0.03,
+    "ptPpm": 0,
+    "pdPpm": 1000,
+    "rhPpm": 0
+  },
+  {
+    "id": "1777366220697",
+    "modelNumber": "0135",
+    "brandName": "hundai",
+    "description": "",
+    "images": [
+      "/uploads/1777366220695-7tmln.jpeg"
+    ],
+    "weightGram": 1000,
+    "moisture": 0.035,
+    "ptPpm": 0,
+    "pdPpm": 0,
+    "rhPpm": 1000
+  },
+  {
+    "id": "1777366309614",
+    "modelNumber": "sdfd",
+    "brandName": "as22",
+    "description": "",
+    "images": [],
+    "weightGram": 1000,
+    "moisture": 0.03,
+    "ptPpm": 1000,
+    "pdPpm": 0,
+    "rhPpm": 0
+  }
+]

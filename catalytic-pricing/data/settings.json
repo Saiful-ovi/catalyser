@@ -1,0 +1,23 @@
+{
+  "usdToAed": 3.6725,
+  "ounceToGram": 31.1034768,
+  "treatmentCharge": 9.18,
+  "serviceMargin": 0,
+  "metals": {
+    "pt": {
+      "usdPerOunce": 2000,
+      "returnRate": 0.97,
+      "refiningCharge": 1101.87
+    },
+    "pd": {
+      "usdPerOunce": 2000,
+      "returnRate": 0.97,
+      "refiningCharge": 1101.87
+    },
+    "rh": {
+      "usdPerOunce": 2000,
+      "returnRate": 0.9,
+      "refiningCharge": 6611.23
+    }
+  }
+}

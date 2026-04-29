@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "email": "admin@example.com",
+    "passwordHash": "$2b$10$llJz1sXShgu1MBp7FCLNc.3CIWMI32BTKgURmLR0WL5P0kBy9jP/K",
+    "role": "admin"
+  },
+  {
+    "id": "1777366337959",
+    "email": "e@gmail.com",
+    "passwordHash": "$2b$10$o6WZZgL2bpJiaAdmcD5EZuYOVSq5v9o1DRoDx4e/lhImS25lMjKk.",
+    "role": "employee"
+  }
+]
