@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, Maximize2, ShoppingCart, Check } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Maximize2, ShoppingCart, Check, Minus, Plus, Eye, EyeOff } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import EmployeeCatalyserCard from './EmployeeCatalyserCard';
 
 export default function EmployeeSearch({ data }) {
   const [query, setQuery] = useState('');
   const [selectedCat, setSelectedCat] = useState(null);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
+  const [modalQuantity, setModalQuantity] = useState(1);
+  const [showPhotos, setShowPhotos] = useState(true);
   const { cart, addToCart } = useCart();
 
   const filtered = data.filter(cat => 
@@ -20,99 +23,54 @@ export default function EmployeeSearch({ data }) {
   const openModal = (cat) => {
     setSelectedCat(cat);
     setActiveImgIdx(0);
+    setModalQuantity(1);
   };
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Search Input */}
-      <div className="relative max-w-2xl mx-auto">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500" />
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            Find Catalyst
+          </h2>
+          <button 
+            onClick={() => setShowPhotos(!showPhotos)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
+              showPhotos 
+                ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' 
+                : 'bg-slate-800 text-slate-400 border-slate-700'
+            }`}
+          >
+            {showPhotos ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            <span>Photos</span>
+          </button>
         </div>
-        <input
-          type="text"
-          placeholder="Search by Model or Brand..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          className="glass-input-icon py-3 sm:py-4 text-base sm:text-lg"
-        />
+
+        {/* Search Input */}
+        <div className="relative max-w-2xl w-full mx-auto">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by Model or Brand..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="glass-input-icon py-3 sm:py-4 text-base sm:text-lg"
+          />
+        </div>
       </div>
 
       {/* Grid View */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className={`grid gap-4 sm:gap-6 ${showPhotos ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
         {filtered.length > 0 ? (
           filtered.map(cat => (
-            <div 
+            <EmployeeCatalyserCard 
               key={cat.id} 
-              className="glass-panel overflow-hidden flex flex-col transition-all hover:border-blue-500/50 hover:shadow-blue-500/10 hover:shadow-2xl hover:-translate-y-1 group"
-            >
-              <div 
-                className="h-40 sm:h-48 w-full bg-slate-800 relative overflow-hidden cursor-pointer"
-                onClick={() => openModal(cat)}
-              >
-                {cat.images && cat.images.length > 0 ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={cat.images[0]} 
-                    alt={cat.modelNumber} 
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" 
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center text-slate-500">No Image</div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="bg-white/10 backdrop-blur-md p-3 rounded-full">
-                    <Maximize2 className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-4 sm:p-6 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-1">
-                  <div className="text-sm font-medium text-blue-400">{cat.brandName}</div>
-                  {isInCart(cat.id) && (
-                    <span className="bg-emerald-500/10 text-emerald-400 p-1 rounded-md">
-                      <Check className="w-4 h-4" />
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{cat.modelNumber}</h3>
-                {cat.description && (
-                  <p className="text-xs text-slate-400 mb-4 line-clamp-2">{cat.description}</p>
-                )}
-                
-                <div className="mt-auto pt-4 border-t border-slate-700/50 flex flex-col space-y-3 sm:space-y-4">
-                  <div className="flex items-end justify-between">
-                    <span className="text-slate-400 text-sm">Final Price</span>
-                    <span className="text-xl sm:text-2xl font-bold text-emerald-400">
-                      {cat.finalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-sm font-normal text-slate-400">AED</span>
-                    </span>
-                  </div>
-                  
-                  <button 
-                    onClick={() => addToCart(cat)}
-                    disabled={isInCart(cat.id)}
-                    className={`w-full py-2.5 rounded-xl flex items-center justify-center space-x-2 font-bold transition-all ${
-                      isInCart(cat.id) 
-                        ? 'bg-slate-800 text-slate-500 cursor-default' 
-                        : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-95'
-                    }`}
-                  >
-                    {isInCart(cat.id) ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        <span>In Cart</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="w-4 h-4" />
-                        <span>Add to Cart</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
+              cat={cat} 
+              onOpenModal={openModal} 
+              showPhotos={showPhotos}
+            />
           ))
         ) : (
           <div className="col-span-full py-12 text-center text-slate-400 bg-slate-900/50 rounded-2xl border border-slate-700/50">
@@ -233,24 +191,48 @@ export default function EmployeeSearch({ data }) {
                   </div>
                 )}
 
+                <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5 flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-1">Select Amount</span>
+                    <p className="text-white text-xs font-medium">How many units?</p>
+                  </div>
+                  <div className="flex items-center bg-slate-800 rounded-full p-1 border border-white/10 shadow-inner">
+                    <button 
+                      onClick={() => setModalQuantity(prev => Math.max(1, prev - 1))}
+                      disabled={isInCart(selectedCat.id)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition-all disabled:opacity-30"
+                    >
+                      <Minus className="w-5 h-5" />
+                    </button>
+                    <span className="w-10 text-center font-black text-white text-lg">{modalQuantity}</span>
+                    <button 
+                      onClick={() => setModalQuantity(prev => prev + 1)}
+                      disabled={isInCart(selectedCat.id)}
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition-all disabled:opacity-30"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
                 <button 
-                  onClick={() => addToCart(selectedCat)}
+                  onClick={() => addToCart(selectedCat, modalQuantity)}
                   disabled={isInCart(selectedCat.id)}
-                  className={`w-full py-3 sm:py-4 rounded-xl flex items-center justify-center space-x-3 text-base sm:text-lg font-bold transition-all ${
+                  className={`w-full py-4 rounded-xl flex items-center justify-center space-x-3 text-lg font-black transition-all ${
                     isInCart(selectedCat.id) 
-                      ? 'bg-slate-800 text-slate-500 cursor-default' 
+                      ? 'bg-slate-800 text-slate-500 cursor-default opacity-50' 
                       : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 active:scale-95'
                   }`}
                 >
                   {isInCart(selectedCat.id) ? (
                     <>
-                      <Check className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <Check className="w-6 h-6" />
                       <span>Added to Cart</span>
                     </>
                   ) : (
                     <>
-                      <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span>Add to Cart</span>
+                      <ShoppingCart className="w-6 h-6" />
+                      <span>Add {modalQuantity > 1 ? `${modalQuantity} Units` : 'to Cart'}</span>
                     </>
                   )}
                 </button>

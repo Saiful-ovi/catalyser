@@ -26,15 +26,15 @@ export function CartProvider({ children }) {
     localStorage.setItem('catalytic_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (item) => {
+  const addToCart = (item, quantity = 1) => {
     setCart(prev => {
       const existing = prev.find(i => i.id === item.id);
       if (existing) {
-        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i);
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, quantity }];
     });
-    toast.success(`${item.modelNumber} added to cart`);
+    toast.success(`${item.modelNumber} added to cart (${quantity})`);
   };
 
   const updateQuantity = (id, delta) => {

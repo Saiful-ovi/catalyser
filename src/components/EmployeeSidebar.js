@@ -87,16 +87,13 @@ export default function EmployeeSidebar() {
               </span>
             )}
           </Link>
-        </nav>
-
-        <div className="p-4 mt-auto">
-          <form action={logout}>
-            <button type="submit" className="flex w-full items-center space-x-3 px-4 py-3 rounded-xl hover:bg-red-500/10 hover:text-red-400 transition-colors text-slate-400">
+          <form action={logout} className="mt-2 border-t border-slate-800/50 pt-2">
+            <button type="submit" className="flex w-full items-center space-x-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-colors">
               <LogOut className="w-5 h-5" />
               <span>Sign Out</span>
             </button>
           </form>
-        </div>
+        </nav>
       </aside>
     </>
   );
