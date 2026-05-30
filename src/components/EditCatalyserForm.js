@@ -5,12 +5,18 @@ import { updateCatalyser } from '@/actions/data';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { uploadImage } from '@/lib/upload';
+import { UploadCloud, FileText, Scale, Droplets, Coins, Hash, Tag, Flame, Save, X } from 'lucide-react';
 
 export default function EditCatalyserForm({ catalyser }) {
   const [isPending, setIsPending] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [selectedFilesCount, setSelectedFilesCount] = useState(0);
   const router = useRouter();
   const toast = useToast();
+
+  const handleFileChange = (e) => {
+    setSelectedFilesCount(e.target.files.length);
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -66,53 +72,212 @@ export default function EditCatalyserForm({ catalyser }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Model Number */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">Model Number</label>
-          <input name="modelNumber" type="text" defaultValue={catalyser.modelNumber} className="glass-input" required />
+          <label className="flex items-center gap-2 text-sm text-slate-400 mb-2 font-semibold">
+            <Hash className="w-4 h-4 text-blue-400" />
+            <span>Model Number</span>
+          </label>
+          <input 
+            name="modelNumber" 
+            type="text" 
+            defaultValue={catalyser.modelNumber}
+            placeholder="e.g. 4GR-20W"
+            className="glass-input focus:ring-blue-500/10 focus:border-blue-500/70" 
+            required 
+          />
         </div>
+
+        {/* Brand Name */}
         <div>
-          <label className="block text-sm text-slate-400 mb-2">Brand Name</label>
-          <input name="brandName" type="text" defaultValue={catalyser.brandName} className="glass-input" required />
+          <label className="flex items-center gap-2 text-sm text-slate-400 mb-2 font-semibold">
+            <Tag className="w-4 h-4 text-blue-400" />
+            <span>Brand Name</span>
+          </label>
+          <input 
+            name="brandName" 
+            type="text" 
+            defaultValue={catalyser.brandName}
+            placeholder="e.g. Toyota"
+            className="glass-input focus:ring-blue-500/10 focus:border-blue-500/70" 
+            required 
+          />
         </div>
+
+        {/* Custom Upload Images Zone */}
         <div className="md:col-span-2">
-          <label className="block text-sm text-slate-400 mb-2">Upload Images (Leaves existing if blank)</label>
-          <input name="images" type="file" multiple accept="image/*" className="glass-input file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20" />
-          {uploadStatus && <p className="text-xs text-blue-400 mt-2 animate-pulse">{uploadStatus}</p>}
+          <label className="flex items-center gap-2 text-sm text-slate-400 mb-2 font-semibold">
+            <UploadCloud className="w-4 h-4 text-blue-400" />
+            <span>Upload Images (Leaves existing if blank)</span>
+          </label>
+          <div className="relative border border-dashed border-slate-700/80 hover:border-blue-500/50 bg-slate-950/20 rounded-2xl p-6 transition-all duration-300 group flex flex-col items-center justify-center text-center cursor-pointer">
+            <input 
+              name="images" 
+              type="file" 
+              multiple 
+              accept="image/*" 
+              onChange={handleFileChange}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10" 
+            />
+            <UploadCloud className="w-10 h-10 text-slate-500 group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300 mb-2" />
+            <p className="text-sm font-bold text-white mb-1">
+              {selectedFilesCount > 0 ? `${selectedFilesCount} new image file(s) chosen` : "Click to select new catalyser images"}
+            </p>
+            <p className="text-xs text-slate-500">Multiple selection supported • Leaves current images if empty</p>
+          </div>
+          {uploadStatus && <p className="text-xs text-blue-400 mt-2.5 animate-pulse font-medium flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+            {uploadStatus}
+          </p>}
         </div>
+
+        {/* Short Description */}
         <div className="md:col-span-2">
-          <label className="block text-sm text-slate-400 mb-2">Short Description</label>
-          <textarea name="description" rows="2" defaultValue={catalyser.description || ''} className="glass-input resize-none" placeholder="Brief description of the catalyser..." />
+          <label className="flex items-center gap-2 text-sm text-slate-400 mb-2 font-semibold">
+            <FileText className="w-4 h-4 text-blue-400" />
+            <span>Short Description</span>
+          </label>
+          <textarea 
+            name="description" 
+            rows="2.5" 
+            defaultValue={catalyser.description || ''}
+            className="glass-input resize-none focus:ring-blue-500/10 focus:border-blue-500/70" 
+            placeholder="Brief description details about this catalytic converter model..." 
+          />
         </div>
-        <div>
-          <label className="block text-sm text-slate-400 mb-2">Weight (KG)</label>
-          <input name="weightKg" type="number" step="0.001" defaultValue={catalyser.weightGram / 1000} className="glass-input" required />
+
+        {/* Physical Specs Cards */}
+        <div className="md:col-span-2 bg-slate-950/20 p-5 rounded-2xl border border-slate-800/60 space-y-4 shadow-inner">
+          <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <Scale className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Physical Specifications</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="flex items-center gap-2 text-sm text-slate-400 mb-2 font-medium">
+                Weight (KG)
+              </label>
+              <div className="relative">
+                <input 
+                  name="weightKg" 
+                  type="number" 
+                  step="0.001" 
+                  defaultValue={catalyser.weightGram / 1000}
+                  placeholder="0.000"
+                  className="glass-input pr-12 focus:ring-emerald-500/10 focus:border-emerald-500/70" 
+                  required 
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-600">KG</span>
+              </div>
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm text-slate-400 mb-2 font-medium">
+                Moisture (%)
+              </label>
+              <div className="relative">
+                <input 
+                  name="moisturePercent" 
+                  type="number" 
+                  step="0.01" 
+                  max="100" 
+                  min="0" 
+                  defaultValue={catalyser.moisture * 100}
+                  placeholder="0.00"
+                  className="glass-input pr-12 focus:ring-emerald-500/10 focus:border-emerald-500/70" 
+                  required 
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-600">%</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-slate-400 mb-2">Moisture (%)</label>
-          <input name="moisturePercent" type="number" step="0.01" max="100" min="0" defaultValue={catalyser.moisture * 100} className="glass-input" required />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-400 mb-2">Platinum (Pt) PPM</label>
-          <input name="ptPpm" type="number" step="0.1" defaultValue={catalyser.ptPpm} className="glass-input" required />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-400 mb-2">Palladium (Pd) PPM</label>
-          <input name="pdPpm" type="number" step="0.1" defaultValue={catalyser.pdPpm} className="glass-input" required />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-400 mb-2">Rhodium (Rh) PPM</label>
-          <input name="rhPpm" type="number" step="0.1" defaultValue={catalyser.rhPpm} className="glass-input" required />
+
+        {/* Precious Metal PPM Values */}
+        <div className="md:col-span-2 bg-slate-950/20 p-5 rounded-2xl border border-slate-800/60 space-y-4 shadow-inner">
+          <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <Coins className="w-3.5 h-3.5 text-amber-400" />
+            <span>Precious Metal PPM Values</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Platinum */}
+            <div className="p-4 bg-gradient-to-b from-amber-500/[0.03] to-transparent rounded-xl border border-amber-500/10 focus-within:border-amber-500/50 transition-all duration-300">
+              <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-amber-400/80 mb-2">
+                <Flame className="w-3.5 h-3.5" />
+                <span>Platinum (Pt)</span>
+              </label>
+              <div className="relative">
+                <input 
+                  name="ptPpm" 
+                  type="number" 
+                  step="0.1" 
+                  defaultValue={catalyser.ptPpm}
+                  placeholder="0"
+                  className="glass-input pr-12 border-amber-500/20 focus:ring-amber-500/10 focus:border-amber-500/70 text-amber-100 font-mono font-bold" 
+                  required 
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-amber-400/50">PPM</span>
+              </div>
+            </div>
+
+            {/* Palladium */}
+            <div className="p-4 bg-gradient-to-b from-sky-500/[0.03] to-transparent rounded-xl border border-sky-500/10 focus-within:border-sky-500/50 transition-all duration-300">
+              <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-sky-400/80 mb-2">
+                <Flame className="w-3.5 h-3.5" />
+                <span>Palladium (Pd)</span>
+              </label>
+              <div className="relative">
+                <input 
+                  name="pdPpm" 
+                  type="number" 
+                  step="0.1" 
+                  defaultValue={catalyser.pdPpm}
+                  placeholder="0"
+                  className="glass-input pr-12 border-sky-500/20 focus:ring-sky-500/10 focus:border-sky-500/70 text-sky-100 font-mono font-bold" 
+                  required 
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-sky-400/50">PPM</span>
+              </div>
+            </div>
+
+            {/* Rhodium */}
+            <div className="p-4 bg-gradient-to-b from-rose-500/[0.03] to-transparent rounded-xl border border-rose-500/10 focus-within:border-rose-500/50 transition-all duration-300">
+              <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-rose-400/80 mb-2">
+                <Flame className="w-3.5 h-3.5" />
+                <span>Rhodium (Rh)</span>
+              </label>
+              <div className="relative">
+                <input 
+                  name="rhPpm" 
+                  type="number" 
+                  step="0.1" 
+                  defaultValue={catalyser.rhPpm}
+                  placeholder="0"
+                  className="glass-input pr-12 border-rose-500/20 focus:ring-rose-500/10 focus:border-rose-500/70 text-rose-100 font-mono font-bold" 
+                  required 
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-rose-400/50">PPM</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex justify-end space-x-4">
-        <button type="button" onClick={() => router.back()} className="px-6 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          Cancel
+
+      <div className="flex justify-end space-x-4 pt-4">
+        <button 
+          type="button" 
+          onClick={() => router.back()} 
+          className="px-6 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all active:scale-[0.98] font-bold flex items-center gap-2"
+        >
+          <X className="w-4 h-4" />
+          <span>Cancel</span>
         </button>
-        <button type="submit" disabled={isPending} className="btn-primary">
-          {isPending ? (uploadStatus || 'Updating...') : 'Update Catalyser'}
+        <button type="submit" disabled={isPending} className="btn-primary flex items-center gap-2 font-bold px-8 shadow-xl">
+          <Save className="w-4 h-4" />
+          <span>{isPending ? (uploadStatus || 'Updating...') : 'Update Catalyser'}</span>
         </button>
       </div>
     </form>
   );
 }
+
