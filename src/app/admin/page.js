@@ -29,7 +29,7 @@ export default async function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1 sm:mb-2">Dashboard</h1>
-          <p className="text-sm sm:text-base text-slate-400">Overview of your catalytic pricing system</p>
+          <p className="text-sm sm:text-base text-slate-400">Overview of your CatMiner pricing system</p>
         </div>
       </div>
 

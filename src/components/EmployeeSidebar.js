@@ -32,7 +32,7 @@ export default function EmployeeSidebar({ hasCalculatorAccess = false }) {
         <div className="flex items-center space-x-2">
           <Diamond className="w-5 h-5 text-blue-400" />
           <span className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
-            Catalytic Portal
+            CatMiner Portal
           </span>
         </div>
         <Link href="/employee/cart" className="relative p-2 bg-slate-800/90 border border-slate-700/50 rounded-xl text-white transition-all active:scale-95">
@@ -64,7 +64,7 @@ export default function EmployeeSidebar({ hasCalculatorAccess = false }) {
           <div className="flex items-center space-x-2">
             <Diamond className="w-6 h-6 text-blue-400" />
             <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
-              Catalytic Portal
+              CatMiner Portal
             </h2>
           </div>
           <button

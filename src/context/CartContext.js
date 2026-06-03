@@ -11,7 +11,7 @@ export function CartProvider({ children }) {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('catalytic_cart');
+    const savedCart = localStorage.getItem('catminer_cart');
     if (savedCart) {
       try {
         setCart(JSON.parse(savedCart));
@@ -23,7 +23,7 @@ export function CartProvider({ children }) {
 
   // Save cart to localStorage on change
   useEffect(() => {
-    localStorage.setItem('catalytic_cart', JSON.stringify(cart));
+    localStorage.setItem('catminer_cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item, quantity = 1) => {

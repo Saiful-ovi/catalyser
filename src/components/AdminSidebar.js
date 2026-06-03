@@ -46,7 +46,7 @@ export default function AdminSidebar() {
       `}>
         <div className="p-6 flex items-center justify-between">
           <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
-            Catalytic Admin
+            CatMiner Admin
           </h2>
           {/* Mobile Close Button */}
           <button

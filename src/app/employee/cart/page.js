@@ -107,7 +107,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-slate-400 text-sm">
                   <span>Service Type</span>
-                  <span className="text-white font-bold">Catalytic Purchase</span>
+                  <span className="text-white font-bold">CatMiner Purchase</span>
                 </div>
                 <div className="border-t border-slate-700/50 pt-4 flex justify-between items-end">
                   <span className="text-white font-medium">Grand Total</span>
