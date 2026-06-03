@@ -1,8 +1,18 @@
 import { getSettings } from '@/actions/data';
+import { getSession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 import RefiningCalculator from '@/components/RefiningCalculator';
 
 export default async function EmployeeCalculatorPage() {
-  const settings = await getSettings();
+  const [session, settings] = await Promise.all([
+    getSession(),
+    getSettings()
+  ]);
+
+  const hasCalculatorAccess = session && settings?.calculatorAccess?.[session.id] === true;
+  if (!hasCalculatorAccess) {
+    redirect('/employee');
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

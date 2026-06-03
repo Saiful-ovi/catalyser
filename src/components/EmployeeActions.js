@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { toggleEmployeeStatus, changeEmployeePassword, deleteEmployee } from '@/actions/data';
+import { toggleEmployeeStatus, changeEmployeePassword, deleteEmployee, toggleEmployeeCalculatorAccess } from '@/actions/data';
 import { KeyRound, Check, X, Loader2, Eye, EyeOff, Trash2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 
@@ -37,6 +37,47 @@ export function ToggleStatusButton({ id, isActive }) {
         <span
           className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-300 shadow-md ${
             active ? 'translate-x-[26px]' : 'translate-x-[4px]'
+          }`}
+        />
+      )}
+    </button>
+  );
+}
+
+export function ToggleCalculatorAccessButton({ id, initialHasAccess }) {
+  const [isPending, startTransition] = useTransition();
+  const [hasAccess, setHasAccess] = useState(initialHasAccess);
+  const toast = useToast();
+
+  const handleToggle = () => {
+    startTransition(async () => {
+      const result = await toggleEmployeeCalculatorAccess(id);
+      if (result.success) {
+        setHasAccess(result.hasAccess);
+        toast.success(result.hasAccess ? 'Refining Calculator access granted' : 'Refining Calculator access revoked');
+      } else {
+        toast.error(result.error || 'Failed to toggle access');
+      }
+    });
+  };
+
+  return (
+    <button
+      onClick={handleToggle}
+      disabled={isPending}
+      className={`relative inline-flex h-7 w-[52px] items-center rounded-full transition-colors duration-300 focus:outline-none ${
+        hasAccess ? 'bg-blue-600 shadow-blue-500/30 shadow-lg' : 'bg-slate-700'
+      }`}
+      title={hasAccess ? 'Click to revoke access' : 'Click to grant access'}
+    >
+      {isPending ? (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="w-4 h-4 text-white animate-spin" />
+        </span>
+      ) : (
+        <span
+          className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-300 shadow-md ${
+            hasAccess ? 'translate-x-[26px]' : 'translate-x-[4px]'
           }`}
         />
       )}

@@ -1,10 +1,14 @@
-import { getUsers } from '@/actions/data';
+import { getUsers, getSettings } from '@/actions/data';
 import EmployeeForm from '@/components/EmployeeForm';
-import { ToggleStatusButton, ChangePasswordButton, DeleteEmployeeButton } from '@/components/EmployeeActions';
+import { ToggleStatusButton, ToggleCalculatorAccessButton, ChangePasswordButton, DeleteEmployeeButton } from '@/components/EmployeeActions';
 
 export default async function EmployeesPage() {
-  const users = await getUsers();
+  const [users, settings] = await Promise.all([
+    getUsers(),
+    getSettings()
+  ]);
   const employees = users.filter(u => u.role === 'employee');
+  const calculatorAccess = settings?.calculatorAccess || {};
 
   return (
     <div className="space-y-8 max-w-5xl">
@@ -28,12 +32,14 @@ export default async function EmployeesPage() {
                   <th className="pb-3 font-medium">Email Address</th>
                   <th className="pb-3 font-medium">Role</th>
                   <th className="pb-3 font-medium text-center">Status</th>
+                  <th className="pb-3 font-medium text-center">Calculator Access</th>
                   <th className="pb-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
                 {employees.map(emp => {
                   const isActive = emp.active !== false;
+                  const hasAccess = calculatorAccess[emp.id] === true;
                   return (
                     <tr key={emp.id} className="text-slate-300">
                       <td className="py-4 font-medium text-white">{emp.email}</td>
@@ -50,6 +56,14 @@ export default async function EmployeesPage() {
                           </span>
                         </div>
                       </td>
+                      <td className="py-4">
+                        <div className="flex items-center justify-center space-x-3">
+                          <ToggleCalculatorAccessButton id={emp.id} initialHasAccess={hasAccess} />
+                          <span className={`text-sm font-medium transition-colors duration-200 ${hasAccess ? 'text-blue-400 animate-pulse' : 'text-slate-500'}`}>
+                            {hasAccess ? 'Allowed' : 'Denied'}
+                          </span>
+                        </div>
+                      </td>
                       <td className="py-4 text-right">
                         <div className="flex items-center justify-end space-x-1">
                           <ChangePasswordButton id={emp.id} email={emp.email} />
@@ -61,7 +75,7 @@ export default async function EmployeesPage() {
                 })}
                 {employees.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="py-8 text-center text-slate-500">No employees created yet.</td>
+                    <td colSpan="5" className="py-8 text-center text-slate-500">No employees created yet.</td>
                   </tr>
                 )}
               </tbody>

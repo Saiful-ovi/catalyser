@@ -7,16 +7,16 @@ import { Search, LogOut, Calculator, Diamond, ShoppingCart, Menu, X } from 'luci
 import { logout } from '@/actions/auth';
 import { useCart } from '@/context/CartContext';
 
-export default function EmployeeSidebar() {
+export default function EmployeeSidebar({ hasCalculatorAccess = false }) {
   const { totalItemsCount } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
   const navItems = [
     { href: '/employee', label: 'Search', icon: Search },
-    { href: '/employee/calculator', label: 'Calculator', icon: Calculator },
+    hasCalculatorAccess && { href: '/employee/calculator', label: 'Calculator', icon: Calculator },
     { href: '/employee/cart', label: 'Cart', icon: ShoppingCart, showBadge: true },
-  ];
+  ].filter(Boolean);
 
   return (
     <>

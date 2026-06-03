@@ -249,6 +249,30 @@ export async function deleteEmployee(id) {
   return { success: true };
 }
 
+export async function toggleEmployeeCalculatorAccess(id) {
+  await checkAdmin();
+  const current = await getSettings();
+  
+  const calculatorAccess = current.calculatorAccess || {};
+  const hasAccess = !calculatorAccess[id];
+  calculatorAccess[id] = hasAccess;
+  
+  const updated = {
+    ...current,
+    calculatorAccess
+  };
+  
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ id: 'main', value: updated });
+    
+  if (error) return { error: error.message };
+  revalidateTag('settings');
+  revalidatePath('/admin/employees');
+  revalidatePath('/employee');
+  return { success: true, hasAccess };
+}
+
 // Admin Credentials
 export async function changeAdminEmail(currentPassword, newEmail) {
   const session = await getSession();
