@@ -1,6 +1,9 @@
+import { getSettings } from '@/actions/data';
 import RefiningCalculator from '@/components/RefiningCalculator';
 
-export default function EmployeeCalculatorPage() {
+export default async function EmployeeCalculatorPage() {
+  const settings = await getSettings();
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -8,7 +11,7 @@ export default function EmployeeCalculatorPage() {
         <p className="text-slate-400">Calculate custom catalytic pricing with live market rates.</p>
       </div>
       
-      <RefiningCalculator />
+      <RefiningCalculator initialRates={settings} />
     </div>
   );
 }

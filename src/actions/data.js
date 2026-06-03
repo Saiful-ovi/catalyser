@@ -2,7 +2,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { getSession } from '@/lib/auth';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache, revalidateTag } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
 async function checkAdmin() {
@@ -13,7 +13,7 @@ async function checkAdmin() {
 }
 
 // Settings
-export async function getSettings() {
+const fetchSettingsFromDb = async () => {
   const { data, error } = await supabase
     .from('settings')
     .select('value')
@@ -22,7 +22,13 @@ export async function getSettings() {
   
   if (error) return null;
   return data.value;
-}
+};
+
+export const getSettings = unstable_cache(
+  async () => fetchSettingsFromDb(),
+  ['settings-main'],
+  { tags: ['settings'] }
+);
 
 export async function updateSettings(newSettings) {
   await checkAdmin();
@@ -31,6 +37,7 @@ export async function updateSettings(newSettings) {
     .upsert({ id: 'main', value: newSettings });
   
   if (error) return { error: error.message };
+  revalidateTag('settings');
   revalidatePath('/admin');
   revalidatePath('/employee');
   return { success: true };
@@ -53,13 +60,14 @@ export async function updateMarketRates(rates) {
     .upsert({ id: 'main', value: updated });
 
   if (error) return { error: error.message };
+  revalidateTag('settings');
   revalidatePath('/admin');
   revalidatePath('/employee');
   return { success: true };
 }
 
 // Catalysers
-export async function getCatalysers() {
+const fetchCatalysersFromDb = async () => {
   const { data, error } = await supabase
     .from('catalysers')
     .select('*')
@@ -78,7 +86,13 @@ export async function getCatalysers() {
     pdPpm: c.pd_ppm,
     rhPpm: c.rh_ppm
   }));
-}
+};
+
+export const getCatalysers = unstable_cache(
+  async () => fetchCatalysersFromDb(),
+  ['catalysers-list'],
+  { tags: ['catalysers'] }
+);
 
 export async function getCatalyserById(id) {
   const { data, error } = await supabase
@@ -120,6 +134,7 @@ export async function addCatalyser(data) {
   });
 
   if (error) return { error: error.message };
+  revalidateTag('catalysers');
   revalidatePath('/admin');
   revalidatePath('/admin/catalysers');
   revalidatePath('/employee');
@@ -145,6 +160,7 @@ export async function updateCatalyser(id, data) {
   }).eq('id', id);
 
   if (error) return { error: error.message };
+  revalidateTag('catalysers');
   revalidatePath('/admin');
   revalidatePath('/admin/catalysers');
   revalidatePath('/employee');
@@ -155,6 +171,7 @@ export async function deleteCatalyser(id) {
   await checkAdmin();
   const { error } = await supabase.from('catalysers').delete().eq('id', id);
   if (error) return { error: error.message };
+  revalidateTag('catalysers');
   revalidatePath('/admin');
   revalidatePath('/employee');
   return { success: true };

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { decrypt } from '@/lib/auth';
 
-export async function middleware(request) {
+export async function proxy(request) {
   const sessionCookie = request.cookies.get('session');
   
   if (request.nextUrl.pathname.startsWith('/admin')) {
