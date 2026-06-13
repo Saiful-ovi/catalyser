@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteAction from './DeleteAction';
+import { getImageUrl } from '@/lib/image';
 
 export default function AdminDashboardSearch({ data }) {
   const [query, setQuery] = useState('');
@@ -69,7 +70,7 @@ export default function AdminDashboardSearch({ data }) {
                       {cat.images && cat.images.length > 0 ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img 
-                          src={cat.images[0]} 
+                          src={getImageUrl(cat.images[0])} 
                           alt={cat.modelNumber} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                         />
@@ -206,7 +207,7 @@ export default function AdminDashboardSearch({ data }) {
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
-                        src={selectedCat.images[activeImgIdx]} 
+                        src={getImageUrl(selectedCat.images[activeImgIdx])} 
                         alt="Preview" 
                         className="w-full h-full object-contain"
                       />
@@ -245,7 +246,7 @@ export default function AdminDashboardSearch({ data }) {
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+                        <img src={getImageUrl(img)} alt="Thumb" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>

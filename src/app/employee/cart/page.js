@@ -3,6 +3,7 @@
 import { useCart } from '@/context/CartContext';
 import { ShoppingCart, Trash2, ArrowLeft, Package, CreditCard, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
+import { getImageUrl } from '@/lib/image';
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart, totalValue, updateQuantity, totalItemsCount } = useCart();
@@ -32,7 +33,7 @@ export default function CartPage() {
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-800 rounded-lg overflow-hidden flex-shrink-0">
                   {item.images && item.images.length > 0 ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.images[0]} alt={item.modelNumber} className="w-full h-full object-cover" />
+                    <img src={getImageUrl(item.images[0])} alt={item.modelNumber} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-600">
                       <Package className="w-6 h-6" />

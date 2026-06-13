@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Search, X, ChevronLeft, ChevronRight, Maximize2, ShoppingCart, Check, Minus, Plus, Eye, EyeOff } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import EmployeeCatalyserCard from './EmployeeCatalyserCard';
+import { getImageUrl } from '@/lib/image';
 
 export default function EmployeeSearch({ data }) {
   const [query, setQuery] = useState('');
@@ -111,7 +112,7 @@ export default function EmployeeSearch({ data }) {
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
-                        src={selectedCat.images[activeImgIdx]} 
+                        src={getImageUrl(selectedCat.images[activeImgIdx])} 
                         alt="Preview" 
                         className="w-full h-full object-contain"
                       />
@@ -156,7 +157,7 @@ export default function EmployeeSearch({ data }) {
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+                        <img src={getImageUrl(img)} alt="Thumb" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>

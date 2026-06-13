@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { updateCatalyser } from '@/actions/data';
+import { updateCatalyser, uploadImageAction } from '@/actions/data';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
-import { uploadImage } from '@/lib/upload';
 import { UploadCloud, FileText, Scale, Droplets, Coins, Hash, Tag, Flame, Save, X } from 'lucide-react';
 
 export default function EditCatalyserForm({ catalyser }) {
@@ -34,8 +33,13 @@ export default function EditCatalyserForm({ catalyser }) {
           const file = imageFiles[i];
           if (file.size > 0) {
             setUploadStatus(`Uploading image ${i + 1}/${imageFiles.length}...`);
-            const url = await uploadImage(file);
-            imageUrls.push(url);
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', file);
+            const uploadRes = await uploadImageAction(uploadFormData);
+            if (uploadRes.error) {
+              throw new Error(uploadRes.error);
+            }
+            imageUrls.push(uploadRes.url);
           }
         }
       }

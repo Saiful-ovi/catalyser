@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Pencil, Database, Scale, Droplets, X, ChevronLeft, ChevronRight, Maximize2, Tag } from 'lucide-react';
+import { Search, Pencil, Database, Scale, Droplets, X, ChevronLeft, ChevronRight, Maximize2, Tag, Download } from 'lucide-react';
 import Link from 'next/link';
 import DeleteAction from './DeleteAction';
 import { calculatePrice } from '@/lib/calculator';
+import { getImageUrl } from '@/lib/image';
 
 export default function CatalyserGrid({ initialData, settings }) {
   const [query, setQuery] = useState('');
@@ -21,6 +22,52 @@ export default function CatalyserGrid({ initialData, settings }) {
     setActiveImgIdx(0);
   };
 
+  const downloadCSV = () => {
+    const headers = [
+      'ID',
+      'Model Number',
+      'Brand Name',
+      'Description',
+      'Weight (Gram)',
+      'Moisture',
+      'Pt (Pt PPM)',
+      'Pd (Pd PPM)',
+      'Rh (Rh PPM)'
+    ];
+
+    const rows = initialData.map(cat => [
+      cat.id,
+      cat.modelNumber,
+      cat.brandName,
+      cat.description || '',
+      cat.weightGram,
+      cat.moisture,
+      cat.ptPpm,
+      cat.pdPpm,
+      cat.rhPpm
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => 
+        row.map(val => {
+          const str = String(val).replace(/"/g, '""');
+          return str.includes(',') || str.includes('\n') || str.includes('"') ? `"${str}"` : str;
+        }).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `catalysers_database_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       {/* Search Header */}
@@ -29,17 +76,27 @@ export default function CatalyserGrid({ initialData, settings }) {
           <Database className="w-5 h-5 text-blue-400" />
           Existing Catalysers ({filtered.length})
         </h2>
-        <div className="relative w-full md:w-72">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-slate-500" />
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <button
+            onClick={downloadCSV}
+            className="flex items-center gap-2 px-4 py-2.5 bg-slate-900/60 hover:bg-blue-600/10 text-slate-300 hover:text-blue-400 text-sm font-bold rounded-xl transition-all border border-slate-800/80 active:scale-95 cursor-pointer"
+          >
+            <Download className="w-4 h-4" />
+            <span>Download CSV</span>
+          </button>
+          
+          <div className="relative w-full md:w-72">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-slate-500" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search database..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none transition-all"
+            />
           </div>
-          <input
-            type="text"
-            placeholder="Search database..."
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:border-blue-500 focus:outline-none transition-all"
-          />
         </div>
       </div>
 
@@ -57,7 +114,7 @@ export default function CatalyserGrid({ initialData, settings }) {
                 {cat.images && cat.images.length > 0 ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img 
-                    src={cat.images[0]} 
+                    src={getImageUrl(cat.images[0])} 
                     alt={cat.modelNumber} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
@@ -191,7 +248,7 @@ export default function CatalyserGrid({ initialData, settings }) {
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
-                        src={selectedCat.images[activeImgIdx]} 
+                        src={getImageUrl(selectedCat.images[activeImgIdx])} 
                         alt="Preview" 
                         className="w-full h-full object-contain"
                       />
@@ -230,7 +287,7 @@ export default function CatalyserGrid({ initialData, settings }) {
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+                        <img src={getImageUrl(img)} alt="Thumb" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>

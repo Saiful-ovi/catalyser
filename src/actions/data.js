@@ -68,13 +68,41 @@ export async function updateMarketRates(rates) {
 
 // Catalysers
 const fetchCatalysersFromDb = async () => {
-  const { data, error } = await supabase
-    .from('catalysers')
-    .select('*')
-    .order('created_at', { ascending: false });
+  let allData = [];
+  let from = 0;
+  const pageSize = 1000;
+  let hasMore = true;
   
-  if (error) return [];
-  return data.map(c => ({
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from('catalysers')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(from, from + pageSize - 1);
+      
+    if (error) {
+      console.error('Error fetching catalysers:', error);
+      break;
+    }
+    
+    if (data && data.length > 0) {
+      allData = [...allData, ...data];
+      if (data.length < pageSize) {
+        hasMore = false;
+      } else {
+        from += pageSize;
+      }
+    } else {
+      hasMore = false;
+    }
+    
+    // Safety check to prevent infinite loop (supporting up to 10,000 catalysers)
+    if (allData.length >= 10000) {
+      break;
+    }
+  }
+  
+  return allData.map(c => ({
     id: c.id,
     modelNumber: c.model_number,
     brandName: c.brand_name,
@@ -311,4 +339,43 @@ export async function changeAdminPassword(currentPassword, newPassword) {
   if (error) return { error: error.message };
   revalidatePath('/admin');
   return { success: true };
+}
+
+// Server-side Image Upload Action
+export async function uploadImageAction(formData) {
+  await checkAdmin();
+  const file = formData.get('file');
+  if (!file || !(file instanceof Blob)) {
+    return { error: 'No file provided' };
+  }
+  
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+    const filePath = `uploads/${fileName}`;
+    
+    const { data, error } = await supabase.storage
+      .from('catalyser-images')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        duplex: 'half'
+      });
+      
+    if (error) {
+      console.error('Supabase storage upload error:', error);
+      return { error: error.message };
+    }
+    
+    const { data: { publicUrl } } = supabase.storage
+      .from('catalyser-images')
+      .getPublicUrl(filePath);
+      
+    return { success: true, url: publicUrl };
+  } catch (err) {
+    console.error('Server upload error:', err);
+    return { error: err.message };
+  }
 }

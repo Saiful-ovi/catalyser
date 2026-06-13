@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Minus, Plus, ShoppingCart, Check, Maximize2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { getImageUrl } from '@/lib/image';
 
 export default function EmployeeCatalyserCard({ cat, onOpenModal, showPhotos = true }) {
   const [quantity, setQuantity] = useState(1);
@@ -27,7 +28,7 @@ export default function EmployeeCatalyserCard({ cat, onOpenModal, showPhotos = t
           {cat.images && cat.images.length > 0 ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img 
-              src={cat.images[0]} 
+              src={getImageUrl(cat.images[0])} 
               alt={cat.modelNumber} 
               className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" 
             />
